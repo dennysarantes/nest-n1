@@ -1,0 +1,46 @@
+@baseUrl = http://localhost:3000/
+
+### APPController teste
+# @name AppControllerGetHello
+GET {{baseUrl}}teste
+
+### AppControllerConceitoTeste
+# @name AppControllerConceitoTeste
+GET {{baseUrl}}conceitos/teste
+
+### Buscar todos recados
+# @name AppControllerRecados
+GET {{baseUrl}}recados
+
+### Buscar todos recados com status code modificado
+GET {{baseUrl}}recados/todos
+?limite=5
+&offset=1
+
+### Buscar recado por id
+GET {{baseUrl}}recados/1
+
+### Criar um recado
+POST {{baseUrl}}recados
+Content-Type: application/json
+
+{
+    "texto": "Teste mensagem 2",
+    "para": "paulo"
+}
+
+
+### Atualizar um recado
+PATCH {{baseUrl}}recados/5
+Content-Type: application/json
+
+{
+   "texto": "Mensagem atualizada",
+   "de":"Flavia",
+   "para": "maria",
+   "lido":false
+}
+
+
+### Remover recado
+DELETE {{baseUrl}}recados/2
