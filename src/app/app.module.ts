@@ -6,11 +6,15 @@ import { CrudAutModule } from './crud-aut/crud-aut.module'; */
 import { RecadosModule } from './recados/recados.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { enviroments } from 'enviroments/enviroments';
+import { PessoasModule } from './pessoas/pessoas.module';
+import { RolesModule } from './roles/roles.module';
 
 @Module({
     //imports: [ConceitoModule, CrudAutModule],
     imports: [
         RecadosModule,
+        PessoasModule,
+        RolesModule,
         TypeOrmModule.forRoot({
             type: 'postgres',
             host: enviroments.variaveis.configBanco.host,

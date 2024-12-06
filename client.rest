@@ -11,11 +11,13 @@ GET {{baseUrl}}conceitos/teste
 ### Buscar todos recados
 # @name AppControllerRecados
 GET {{baseUrl}}recados
+?limit=3
+&page=3
 
 ### Buscar todos recados com status code modificado
 GET {{baseUrl}}recados/todos
-?limite=5
-&offset=1
+?limit=1
+&page=1
 
 ### Buscar recado por id
 GET {{baseUrl}}recados/1
@@ -25,22 +27,74 @@ POST {{baseUrl}}recados
 Content-Type: application/json
 
 {
-    "texto": "Teste mensagem 2",
-    "para": "paulo"
+    "texto": "abcd abasdsad saddsa ",
+    "de":{"id": 14},
+    "para":[{"id":3}, {"id": 15}]
 }
 
 
 ### Atualizar um recado
-PATCH {{baseUrl}}recados/5
+PATCH {{baseUrl}}recados/4
 Content-Type: application/json
 
 {
-   "texto": "Mensagem atualizada",
-   "de":"Flavia",
-   "para": "maria",
-   "lido":false
+   "texto": "Mensagem atualizada 4",
+   "de":{"id": 14},
+   "para": [{"id":3}],
+   "lido": true
 }
 
 
 ### Remover recado
 DELETE {{baseUrl}}recados/2
+
+
+
+
+// API ROLES
+
+### Buscar todos roles
+GET {{baseUrl}}roles
+
+### Criar uma role
+POST {{baseUrl}}roles
+Content-Type: application/json
+
+{
+    "nome": "users",
+    "descricao": "Role de usuários comuns"
+}
+
+
+// API PESSOAS
+
+### Buscar todas pessoas
+GET {{baseUrl}}pessoas
+
+### Buscar pessoa por id
+GET {{baseUrl}}pessoas/3
+
+### Criar uma pessoa
+POST {{baseUrl}}pessoas
+Content-Type: application/json
+
+{
+    "email": "sofia@app.com",
+    "password": "12345678",
+    "nome":"Sofia Arantes",
+    "roles":[{"id": 2}]
+}
+
+### Remover Pessoa
+DELETE {{baseUrl}}pessoas/15
+
+
+### Atualizar uma pessoa
+PATCH {{baseUrl}}pessoas/10
+Content-Type: application/json
+
+{
+    "nome":"nova pessoa",
+    "email": "teste@teste.com",
+    "roles":[{"id": 1}, {"id": 2}, {"id": 3}]
+}

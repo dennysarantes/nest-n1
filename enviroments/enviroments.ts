@@ -9,6 +9,7 @@ const variaveis = {
         password: '12345',
         nomeBd: 'nest-m1',
     },
+    secret_password: process.env.SECRET_KEY,
 };
 
 export const enviroments = {

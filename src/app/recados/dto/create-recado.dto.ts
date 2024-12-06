@@ -1,4 +1,5 @@
 import { IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
+import { Pessoa } from 'src/app/pessoas/entities/pessoa.entity';
 
 /* eslint-disable prettier/prettier */
 export class CreateRecadoDto {
@@ -16,16 +17,15 @@ export class CreateRecadoDto {
     })
     readonly texto: string;
 
-    @IsString({
-        message: getUserIncorreto(),
-    })
     @IsNotEmpty({
-        message: getUserIncorreto(),
+        message: 'Destinatários são obrigatórios.',
     })
-    @MaxLength(50, {
-        message: getMensagemMax(),
+    readonly para: Pessoa[];
+
+    @IsNotEmpty({
+        message: 'Remetente é obrigatório.',
     })
-    readonly para: string;
+    readonly de: Pessoa;
 
     constructor() {}
 }
@@ -40,8 +40,4 @@ function getMensagemMin(): string {
 
 function getMensagemMax(): string {
     return 'A mensagem deve ter no máximo de 250 caracteres.';
-}
-
-function getUserIncorreto(): string {
-    return 'O destinatário está incorreto.'
 }

@@ -19,27 +19,28 @@ import { RecadosService } from './recados.service';
 import { CreateRecadoDto } from './dto/create-recado.dto';
 import { UpdateRecadoDto } from './dto/update-recado.dto';
 import { Response } from 'express';
+import { PaginatorDto } from '../shared/dto/paginator.dto';
 
 @Controller('recados')
 export class RecadosController {
     constructor(private readonly recadosService: RecadosService) {}
 
     @Get()
-    findAll(@Headers() headers) {
+    findAll(@Headers() headers, @Query() paginatorDto?: PaginatorDto) {
         console.log('Os headers: ', headers);
-        return this.recadosService.findAll();
+        return this.recadosService.findAll(paginatorDto);
     }
 
     // Resposta com status code alterado!
     @HttpCode(HttpStatus.AMBIGUOUS)
     @Get('todos')
-    findAllModificado(@Query() paginacao: any) {
-        const { limite = 10, offset = 0 } = paginacao;
+    findAllModificado(@Query() paginatorDto?: PaginatorDto) {
+        const { limit = 10, page = 0 } = paginatorDto;
 
         return {
             mensagem: 'Essa rota tem um status cod específico',
-            limite,
-            offset,
+            limit,
+            page,
         };
     }
 
@@ -60,6 +61,7 @@ export class RecadosController {
 
     @Post()
     create(@Body() createRecadoDto: CreateRecadoDto) {
+        console.log('createRecadoDto: ', createRecadoDto);
         return this.recadosService.create(createRecadoDto);
     }
 
@@ -72,11 +74,12 @@ export class RecadosController {
         if (!id) {
             throw new BadRequestException('O parâmetro ID é obrigatório');
         }
+
         const upd = await this.recadosService.update(id, updateRecadoDto);
 
         return upd === null
             ? res.status(400).json({ mensagem: 'Recado inexistente.' })
-            : upd;
+            : res.status(200).json(upd);
     }
 
     @Delete(':id')

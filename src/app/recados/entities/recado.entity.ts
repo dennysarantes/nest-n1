@@ -1,7 +1,11 @@
+import { Pessoa } from 'src/app/pessoas/entities/pessoa.entity';
 import {
     Column,
     CreateDateColumn,
     Entity,
+    JoinTable,
+    ManyToMany,
+    ManyToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
@@ -14,17 +18,24 @@ export class Recado {
     @Column({ type: 'varchar', length: 255 })
     texto: string;
 
-    @Column({ type: 'varchar', length: 50 })
-    de: string;
-
-    @Column({ type: 'varchar', length: 50 })
-    para: string;
-
     @Column({ type: 'boolean', default: false })
     lido: boolean;
 
     @Column({ type: 'date' })
     data: Date;
+
+    @ManyToOne(
+        () => Pessoa,
+        (pessoa) => pessoa.recados /*  {
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+    } */,
+    )
+    de: Pessoa;
+
+    @ManyToMany(() => Pessoa)
+    @JoinTable()
+    para: Pessoa[];
 
     @CreateDateColumn()
     createdAt?: Date;
@@ -34,13 +45,11 @@ export class Recado {
 
     constructor(
         texto: string,
-        de: string,
-        para: string,
+        de: Pessoa,
+        para: Pessoa[],
         lido: boolean,
         data: Date,
-        id?: number,
     ) {
-        if (id !== undefined) this.id = id;
         if (texto !== undefined) this.texto = texto;
         if (de !== undefined) this.de = de;
         if (para !== undefined) this.para = para;
