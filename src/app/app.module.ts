@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 /* import { ConceitoModule } from './conceito/conceito.module';
@@ -8,6 +8,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { enviroments } from 'enviroments/enviroments';
 import { PessoasModule } from './pessoas/pessoas.module';
 import { RolesModule } from './roles/roles.module';
+import { SimpleMiddleware } from './shared/middlewares/simple.middleware';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { AuthTokenInterceptor } from './shared/interceptors/auth.token.interceptor';
+import { ChangeDataInterceptor } from './shared/interceptors/change-data.interceptor';
+import { ErrorLogInterceptor } from './shared/interceptors/error.log.interceptor';
+import { MinhaExceptionFilter } from './shared/filters/my.excpetion.filter';
+import { IsAdminGuard } from './shared/guards/is-admin.guard';
 
 @Module({
     //imports: [ConceitoModule, CrudAutModule],
@@ -27,6 +34,32 @@ import { RolesModule } from './roles/roles.module';
         }),
     ],
     controllers: [AppController],
-    providers: [AppService],
+    providers: [
+        AppService,
+        {
+            provide: APP_FILTER,
+            useClass: MinhaExceptionFilter,
+        },
+        {
+            provide: APP_INTERCEPTOR,
+            useClass: AuthTokenInterceptor,
+        },
+        {
+            provide: APP_INTERCEPTOR,
+            useClass: ChangeDataInterceptor,
+        },
+        {
+            provide: APP_INTERCEPTOR,
+            useClass: ErrorLogInterceptor,
+        },
+        {
+            provide: APP_GUARD,
+            useClass: IsAdminGuard,
+        },
+    ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+    configure(consumer: MiddlewareConsumer) {
+        consumer.apply(SimpleMiddleware).forRoutes('recados');
+    }
+}

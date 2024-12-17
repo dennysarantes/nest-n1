@@ -13,21 +13,30 @@ import {
     Res,
     //HttpException,
     BadRequestException,
-    ParseIntPipe,
+    //ParseIntPipe,
+    UsePipes,
+    UseInterceptors,
+    Req,
 } from '@nestjs/common';
 import { RecadosService } from './recados.service';
 import { CreateRecadoDto } from './dto/create-recado.dto';
 import { UpdateRecadoDto } from './dto/update-recado.dto';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { PaginatorDto } from '../shared/dto/paginator.dto';
+import { ParseIntIdPipe } from '../shared/pipes/id.pipe';
+import { AddHeaderInterceptor } from '../shared/interceptors/add.header.interceptor';
+import { ErrorLogInterceptor } from '../shared/interceptors/error.log.interceptor';
+import { UrlParam } from '../shared/custom-params/get-url.param';
 
 @Controller('recados')
+@UsePipes(ParseIntIdPipe)
 export class RecadosController {
     constructor(private readonly recadosService: RecadosService) {}
 
     @Get()
+    @UseInterceptors(AddHeaderInterceptor, ErrorLogInterceptor)
     findAll(@Headers() headers, @Query() paginatorDto?: PaginatorDto) {
-        console.log('Os headers: ', headers);
+        console.log('controller...');
         return this.recadosService.findAll(paginatorDto);
     }
 
@@ -45,9 +54,21 @@ export class RecadosController {
     }
 
     @Get(':id')
-    async findOne(@Param('id', ParseIntPipe) id: number, @Res() res: Response) {
+    async findOne(
+        @Param('id') id: number,
+        @Req() req: Request,
+        @Res() res: Response,
+        @UrlParam() url?: string,
+    ) {
+        console.log('url buscada pelo customParam: ', url);
         const recado = await this.recadosService.findOne(id);
+        const user = req['user'];
+
+        console.log('user: ', user);
+
         if (recado) {
+            console.log('entrou no controller...');
+            res.appendHeader('teste', '12343');
             return res.status(200).json(recado);
         } else {
             throw new BadRequestException('Recado não encontrado.');
@@ -67,7 +88,7 @@ export class RecadosController {
 
     @Patch(':id')
     async update(
-        @Param('id', ParseIntPipe) id: number,
+        @Param('id') id: number,
         @Body() updateRecadoDto: UpdateRecadoDto,
         @Res() res: Response,
     ) {
@@ -83,7 +104,7 @@ export class RecadosController {
     }
 
     @Delete(':id')
-    remove(@Param('id', ParseIntPipe) id: number) {
+    remove(@Param('id' /* , ParseIntPipe */) id: number) {
         return this.recadosService.remove(id);
     }
 }

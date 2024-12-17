@@ -11,8 +11,8 @@ GET {{baseUrl}}conceitos/teste
 ### Buscar todos recados
 # @name AppControllerRecados
 GET {{baseUrl}}recados
-?limit=3
-&page=3
+?limit=0
+&page=0
 
 ### Buscar todos recados com status code modificado
 GET {{baseUrl}}recados/todos
@@ -20,7 +20,9 @@ GET {{baseUrl}}recados/todos
 &page=1
 
 ### Buscar recado por id
-GET {{baseUrl}}recados/1
+GET {{baseUrl}}recados/3
+#teste: 12345
+Authorization: Bearer 1234567
 
 ### Criar um recado
 POST {{baseUrl}}recados
@@ -55,6 +57,7 @@ DELETE {{baseUrl}}recados/2
 
 ### Buscar todos roles
 GET {{baseUrl}}roles
+Authorization: Bearer 1234567
 
 ### Criar uma role
 POST {{baseUrl}}roles
@@ -70,6 +73,7 @@ Content-Type: application/json
 
 ### Buscar todas pessoas
 GET {{baseUrl}}pessoas
+Authorization: Bearer 1234567
 
 ### Buscar pessoa por id
 GET {{baseUrl}}pessoas/3

@@ -28,6 +28,7 @@ export class RecadosService {
     }
 
     async findAll(paginator?: PaginatorDto) {
+        console.log('service....');
         const { limit = 10, page = 0 } = paginator;
         const offset = page * limit;
 
