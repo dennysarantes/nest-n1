@@ -10,6 +10,9 @@ const variaveis = {
         nomeBd: 'nest-m1',
     },
     secret_password: process.env.SECRET_KEY,
+    REMOVER_SPACES_REGEX: 'REMOVER_SPACES_REGEX',
+    APENAS_LOWER_CASE_REGEX: 'APENAS_LOWER_CASE_REGEX',
+    serverName: 'Servidor Nest.js',
 };
 
 export const enviroments = {

@@ -17,6 +17,7 @@ import {
     UsePipes,
     UseInterceptors,
     Req,
+    Inject,
 } from '@nestjs/common';
 import { RecadosService } from './recados.service';
 import { CreateRecadoDto } from './dto/create-recado.dto';
@@ -27,11 +28,35 @@ import { ParseIntIdPipe } from '../shared/pipes/id.pipe';
 import { AddHeaderInterceptor } from '../shared/interceptors/add.header.interceptor';
 import { ErrorLogInterceptor } from '../shared/interceptors/error.log.interceptor';
 import { UrlParam } from '../shared/custom-params/get-url.param';
+//import { RegexProtocol } from '../shared/regex/regex.protocol';
+import { enviroments } from 'enviroments/enviroments';
+import { ManterApenasLowerCase } from '../shared/regex/manter-apenas-lowerCase.regex';
+import { RemoveSpacesRegex } from '../shared/regex/remove-spaces.regex';
 
 @Controller('recados')
 @UsePipes(ParseIntIdPipe)
 export class RecadosController {
-    constructor(private readonly recadosService: RecadosService) {}
+    constructor(
+        private readonly recadosService: RecadosService,
+        @Inject('SERVER_NAME')
+        private readonly serverName: string,
+
+        /* @Inject(enviroments.variaveis.REMOVER_SPACES_REGEX)
+        private readonly removerSpacesRegex: RegexProtocol,
+
+        @Inject(enviroments.variaveis.APENAS_LOWER_CASE_REGEX)
+        private readonly apenasLowerCaseRegex: RegexProtocol, */
+
+        @Inject(enviroments.variaveis.APENAS_LOWER_CASE_REGEX)
+        private readonly apenasLowerCaseRegex: ManterApenasLowerCase,
+
+        @Inject(enviroments.variaveis.REMOVER_SPACES_REGEX)
+        private readonly removerSpacesRegex: RemoveSpacesRegex,
+    ) {
+        console.log('Server Name:', serverName);
+        console.log(removerSpacesRegex.execute('Server Name:' + serverName));
+        console.log(apenasLowerCaseRegex.execute('ApenasLetrasMinúsculas'));
+    }
 
     @Get()
     @UseInterceptors(AddHeaderInterceptor, ErrorLogInterceptor)
