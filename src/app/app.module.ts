@@ -5,7 +5,7 @@ import { AppService } from './app.service';
 import { CrudAutModule } from './crud-aut/crud-aut.module'; */
 import { RecadosModule } from './recados/recados.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { enviroments } from 'enviroments/enviroments';
+//import { enviroments } from 'enviroments/enviroments';
 import { PessoasModule } from './pessoas/pessoas.module';
 import { RolesModule } from './roles/roles.module';
 import { SimpleMiddleware } from './shared/middlewares/simple.middleware';
@@ -15,23 +15,41 @@ import { ChangeDataInterceptor } from './shared/interceptors/change-data.interce
 import { ErrorLogInterceptor } from './shared/interceptors/error.log.interceptor';
 import { MinhaExceptionFilter } from './shared/filters/my.excpetion.filter';
 import { IsAdminGuard } from './shared/guards/is-admin.guard';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import appConfig from './app.config';
 
 @Module({
     //imports: [ConceitoModule, CrudAutModule],
     imports: [
+        ConfigModule.forRoot({
+            envFilePath: 'enviroments/.env',
+            load: [appConfig],
+            //ignoreEnvFile: true, // utilizado quando não se quer utilizar variáveis de ambiente.
+        }),
+        TypeOrmModule.forRootAsync({
+            imports: [ConfigModule],
+            inject: [ConfigService],
+            useFactory: async (configService: ConfigService) => {
+                return {
+                    type: configService.get<'postgres'>('database.type'),
+                    host: configService.get<string>('database.host'),
+                    port: configService.get<number>('database.port'),
+                    username: configService.get<string>('database.username'),
+                    database: configService.get<string>('database.database'),
+                    password: configService.get<string>('database.password'),
+                    autoLoadEntities: configService.get<boolean>(
+                        'database.autoLoadEntities',
+                    ),
+                    synchronize: configService.get<boolean>(
+                        'database.synchronize',
+                    ),
+                };
+            },
+        }),
+
         RecadosModule,
         PessoasModule,
         RolesModule,
-        TypeOrmModule.forRoot({
-            type: 'postgres',
-            host: enviroments.variaveis.configBanco.host,
-            port: enviroments.variaveis.configBanco.porta,
-            username: enviroments.variaveis.configBanco.username,
-            database: enviroments.variaveis.configBanco.nomeBd,
-            password: enviroments.variaveis.configBanco.password,
-            autoLoadEntities: true, // Carrega as entidades sem precisar especificá-las
-            synchronize: enviroments.variaveis.contexto != 'prd' ? true : false, // Sincroniza as mudanças com o banco: NÃO PODE FAZER EM PRODUÇÃO
-        }),
     ],
     controllers: [AppController],
     providers: [
@@ -59,6 +77,11 @@ import { IsAdminGuard } from './shared/guards/is-admin.guard';
     ],
 })
 export class AppModule implements NestModule {
+    constructor() {
+        //console.log(process.env.VARIAVEL1);
+        //console.log(process.env.VARIAVEL2);
+    }
+
     configure(consumer: MiddlewareConsumer) {
         consumer.apply(SimpleMiddleware).forRoutes('recados');
     }

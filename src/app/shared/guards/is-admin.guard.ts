@@ -12,6 +12,9 @@ export class IsAdminGuard implements CanActivate {
     ): boolean | Promise<boolean> | Observable<boolean> {
         console.log('Guard...');
         const { authorization } = context.switchToHttp().getRequest().headers;
+        const url = context.switchToHttp().getRequest().url;
+
+        console.log('url no guard: ', url);
         console.log('authorization no Guard: ', authorization);
 
         // Aqui, teoricamente o guard faria uma busca em pessoa Service e verificaria o perfil do login e a rota.

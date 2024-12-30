@@ -13,6 +13,8 @@ export class AuthTokenInterceptor implements NestInterceptor {
         context: ExecutionContext,
         next: CallHandler<any>,
     ): Observable<any> | Promise<Observable<any>> {
+        // console.log('rewquest: ', context.switchToHttp().getRequest());
+
         const { authorization } = context.switchToHttp().getRequest().headers;
         console.log('Intercept Authorization: ', authorization);
 

@@ -13,6 +13,7 @@ GET {{baseUrl}}conceitos/teste
 GET {{baseUrl}}recados
 ?limit=0
 &page=0
+Authorization: Bearer 1234567
 
 ### Buscar todos recados com status code modificado
 GET {{baseUrl}}recados/todos
@@ -70,6 +71,15 @@ Content-Type: application/json
 
 
 // API PESSOAS
+
+
+### Autenticar pessoas
+POST {{baseUrl}}pessoas/autenticar
+
+{
+    "email": "users",
+    "password": "1234"
+}
 
 ### Buscar todas pessoas
 GET {{baseUrl}}pessoas

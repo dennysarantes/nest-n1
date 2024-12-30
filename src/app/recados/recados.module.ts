@@ -7,9 +7,10 @@ import { RemoveSpacesRegex } from '../shared/regex/remove-spaces.regex';
 import { ManterApenasLowerCase } from '../shared/regex/manter-apenas-lowerCase.regex';
 import { enviroments } from 'enviroments/enviroments';
 import { RegexFactory } from '../shared/regex/regex.factory';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Recado])],
+    imports: [ConfigModule, TypeOrmModule.forFeature([Recado])],
     controllers: [RecadosController],
     providers: [
         RecadosService,
