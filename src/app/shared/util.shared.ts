@@ -51,7 +51,35 @@ const descriptografar = (encryptedValue) => {
     return decrypted;
 };
 
+const removeAtributosNulosDoObjeto = (objMapped) => {
+    try {
+      if (!objMapped) return objMapped;
+      //REMOVE ATRIBUTOS NULOS DO OBJETO PASSADO
+      Object.keys(objMapped).forEach((key) => {
+        if (
+          objMapped[key] &&
+          typeof objMapped[key] === "object"
+        ) {
+          removeAtributosNulosDoObjeto(objMapped[key]);
+          if (Object.keys(objMapped[key]).length === 0) {
+
+            //se pai ficou sem filhos
+            delete objMapped[key]; //remove pai
+          }
+        } else if (objMapped[key] === null || objMapped[key] === "" || objMapped[key] === undefined )
+          delete objMapped[key];
+      });
+
+      return objMapped;
+    } catch (error) {
+      console.error("Não foi possível remover atributos nulos do objeto");
+      return objMapped;
+    }
+  };
+
+
 export const UtilShared = {
     criptografar,
     descriptografar,
+    removeAtributosNulosDoObjeto
 };

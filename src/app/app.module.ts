@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { forwardRef, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 /* import { ConceitoModule } from './conceito/conceito.module';
@@ -17,6 +17,7 @@ import { MinhaExceptionFilter } from './shared/filters/my.excpetion.filter';
 import { IsAdminGuard } from './shared/guards/is-admin.guard';
 import { ConfigModule, ConfigType } from '@nestjs/config';
 import appConfig from './app.config';
+import { AuthModule } from './shared/auth/auth.module';
 
 @Module({
     //imports: [ConceitoModule, CrudAutModule],
@@ -43,8 +44,9 @@ import appConfig from './app.config';
             },
           }),
         RecadosModule,
-        PessoasModule,
         RolesModule,
+        forwardRef(() => PessoasModule),
+        forwardRef(() => AuthModule),
     ],
     controllers: [AppController],
     providers: [

@@ -10,17 +10,12 @@ import {
 import { PessoasService } from './pessoas.service';
 import { CreatePessoaDto } from './dto/create-pessoa.dto';
 import { UpdatePessoaDto } from './dto/update-pessoa.dto';
-import { AutenticarPessoaDto } from './dto/autenticar-pessoa.dto';
+import { AutenticarPessoaDto } from '../shared/auth/autenticar-pessoa.dto';
 
 @Controller('pessoas')
 export class PessoasController {
     constructor(private readonly pessoasService: PessoasService) {}
 
-    @Post('/autenticar')
-    autenticar(@Body() autenticarPessoaDto: AutenticarPessoaDto) {
-        console.log('autenticarPessoaDto: ', autenticarPessoaDto);
-        return 'token'; //this.pessoasService.create(createPessoaDto);
-    }
 
     @Post()
     create(@Body() createPessoaDto: CreatePessoaDto) {

@@ -1,7 +1,7 @@
 import { Role } from 'src/app/roles/entities/role.entity';
 import {
-    BeforeInsert,
-    BeforeUpdate,
+   /*  BeforeInsert,
+    BeforeUpdate, */
     Column,
     CreateDateColumn,
     Entity,
@@ -13,12 +13,15 @@ import {
     UpdateDateColumn,
 } from 'typeorm';
 import { StatusPessoaEnum } from '../model/status-pessoa.enum';
-import { UtilShared } from 'src/app/shared/util.shared';
+//import { UtilShared } from 'src/app/shared/util.shared';
 import { Recado } from 'src/app/recados/entities/recado.entity';
+//import { BcryptServiceProtocol } from 'src/app/shared/auth/hashing/bcrypt.service';
 
 @Entity()
 @Unique(['email'])
 export class Pessoa {
+
+
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -53,6 +56,7 @@ export class Pessoa {
         nome: string,
         roles?: Role[],
         recados?: Recado[],
+        //private readonly bcryptService?: BcryptServiceProtocol,
     ) {
         if (email !== undefined) this.email = email;
         if (passwordHash !== undefined) this.passwordHash = passwordHash;
@@ -61,9 +65,9 @@ export class Pessoa {
         if (recados !== undefined) this.recados = recados;
     }
 
-    @BeforeInsert()
+/*     @BeforeInsert()
     @BeforeUpdate()
-    updatePassword() {
-        this.passwordHash = UtilShared.criptografar(this.passwordHash);
-    }
+    async updatePassword() {
+        this.passwordHash =  await this.bcryptService.hash(this.passwordHash);
+    } */
 }

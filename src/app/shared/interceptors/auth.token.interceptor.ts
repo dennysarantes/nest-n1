@@ -15,9 +15,11 @@ export class AuthTokenInterceptor implements NestInterceptor {
     ): Observable<any> | Promise<Observable<any>> {
 
         const { authorization } = context.switchToHttp().getRequest().headers;
+        const url = context.switchToHttp().getRequest().url
         console.log('Intercept Authorization: ', authorization);
 
-        if (authorization) {
+        if (authorization || url === '/auth/autenticar') {
+            console.log("context.switchToHttp().getRequest().params: ", context.switchToHttp().getRequest().params);
             // Valida o Token aqui...
             return next.handle();
         }
