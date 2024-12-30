@@ -15,23 +15,36 @@ import { ChangeDataInterceptor } from './shared/interceptors/change-data.interce
 import { ErrorLogInterceptor } from './shared/interceptors/error.log.interceptor';
 import { MinhaExceptionFilter } from './shared/filters/my.excpetion.filter';
 import { IsAdminGuard } from './shared/guards/is-admin.guard';
+import { ConfigModule, ConfigService, ConfigType } from '@nestjs/config';
+import appConfig from './app.config';
 
 @Module({
     //imports: [ConceitoModule, CrudAutModule],
     imports: [
+        ConfigModule.forRoot({
+            envFilePath: 'enviroments/.env',
+            //load: [appConfig]
+        }),
+        ConfigModule.forFeature(appConfig),
+        TypeOrmModule.forRootAsync({
+            imports: [ConfigModule.forFeature(appConfig)],
+            inject: [appConfig.KEY],
+            useFactory: async (appConfg: ConfigType<typeof appConfig>) => {
+              return {
+                type: appConfg.database.type,
+                host: appConfg.database.host,
+                port: appConfg.database.port,
+                username: appConfg.database.username,
+                database: appConfg.database.database,
+                password: appConfg.database.password,
+                autoLoadEntities: appConfg.database.autoLoadEntities,
+                synchronize: appConfg.database.synchronize,
+              };
+            },
+          }),
         RecadosModule,
         PessoasModule,
         RolesModule,
-        TypeOrmModule.forRoot({
-            type: 'postgres',
-            host: enviroments.variaveis.configBanco.host,
-            port: enviroments.variaveis.configBanco.porta,
-            username: enviroments.variaveis.configBanco.username,
-            database: enviroments.variaveis.configBanco.nomeBd,
-            password: enviroments.variaveis.configBanco.password,
-            autoLoadEntities: true, // Carrega as entidades sem precisar especificá-las
-            synchronize: enviroments.variaveis.contexto != 'prd' ? true : false, // Sincroniza as mudanças com o banco: NÃO PODE FAZER EM PRODUÇÃO
-        }),
     ],
     controllers: [AppController],
     providers: [

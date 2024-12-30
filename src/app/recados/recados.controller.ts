@@ -32,6 +32,8 @@ import { UrlParam } from '../shared/custom-params/get-url.param';
 import { enviroments } from 'enviroments/enviroments';
 import { ManterApenasLowerCase } from '../shared/regex/manter-apenas-lowerCase.regex';
 import { RemoveSpacesRegex } from '../shared/regex/remove-spaces.regex';
+import appConfig from '../app.config';
+import { ConfigType } from '@nestjs/config';
 
 @Controller('recados')
 @UsePipes(ParseIntIdPipe)
@@ -52,10 +54,16 @@ export class RecadosController {
 
         @Inject(enviroments.variaveis.REMOVER_SPACES_REGEX)
         private readonly removerSpacesRegex: RemoveSpacesRegex,
+
+        @Inject(appConfig.KEY)
+        private readonly appConf: ConfigType<typeof appConfig>
+
     ) {
         console.log('Server Name:', serverName);
         console.log(removerSpacesRegex.execute('Server Name:' + serverName));
         console.log(apenasLowerCaseRegex.execute('ApenasLetrasMinúsculas'));
+        console.log('App config', appConf.database.database);
+
     }
 
     @Get()

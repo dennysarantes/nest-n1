@@ -3,6 +3,7 @@
 ### APPController teste
 # @name AppControllerGetHello
 GET {{baseUrl}}teste
+Authorization: Bearer 1234567
 
 ### AppControllerConceitoTeste
 # @name AppControllerConceitoTeste
@@ -13,6 +14,7 @@ GET {{baseUrl}}conceitos/teste
 GET {{baseUrl}}recados
 ?limit=0
 &page=0
+Authorization: Bearer 1234567
 
 ### Buscar todos recados com status code modificado
 GET {{baseUrl}}recados/todos
@@ -27,11 +29,12 @@ Authorization: Bearer 1234567
 ### Criar um recado
 POST {{baseUrl}}recados
 Content-Type: application/json
+Authorization: Bearer 1234567
 
 {
-    "texto": "abcd abasdsad saddsa ",
-    "de":{"id": 14},
-    "para":[{"id":3}, {"id": 15}]
+    "texto": "Novo recado XPTO ",
+    "de":{"id": 2},
+    "para":[{"id":1}]
 }
 
 
@@ -62,10 +65,12 @@ Authorization: Bearer 1234567
 ### Criar uma role
 POST {{baseUrl}}roles
 Content-Type: application/json
+Authorization: Bearer 1234567
+
 
 {
-    "nome": "users",
-    "descricao": "Role de usuários comuns"
+    "nome": "maintainer",
+    "descricao": "Role de administradores do sistema"
 }
 
 
@@ -81,12 +86,13 @@ GET {{baseUrl}}pessoas/3
 ### Criar uma pessoa
 POST {{baseUrl}}pessoas
 Content-Type: application/json
+Authorization: Bearer 1234567
 
 {
-    "email": "sofia@app.com",
+    "email": "dennys@app.com",
     "password": "12345678",
-    "nome":"Sofia Arantes",
-    "roles":[{"id": 2}]
+    "nome":"Dennys Arantes",
+    "roles":[{"id": 1},{"id": 2}, {"id":3} ]
 }
 
 ### Remover Pessoa
