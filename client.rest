@@ -76,6 +76,15 @@ Authorization: Bearer 1234567
 
 // API PESSOAS
 
+
+### Autenticar pessoas
+POST {{baseUrl}}pessoas/autenticar
+
+{
+    "email": "users",
+    "password": "1234"
+}
+
 ### Buscar todas pessoas
 GET {{baseUrl}}pessoas
 Authorization: Bearer 1234567

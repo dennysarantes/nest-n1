@@ -23,3 +23,8 @@ Aplicação Rest módulo 1
 
 3- Neste projeto utilizamos o typeorm e o driver do postgres:
 <p style="margin-left: 2em"> a) Para instalar: yarn add @nestjs/typeorm typeorm pg</p>
+
+4- Neste projeto utilizamos o nest config para lidar com as variáveis de ambiente:
+<p style="margin-left: 2em"> a) Para instalar: yarn add @nestjs/config</p>
+
+É importante lembrar que este módulo deve ser importado no app.module para funcionar corretamente.

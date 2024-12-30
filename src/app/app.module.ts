@@ -5,7 +5,7 @@ import { AppService } from './app.service';
 import { CrudAutModule } from './crud-aut/crud-aut.module'; */
 import { RecadosModule } from './recados/recados.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { enviroments } from 'enviroments/enviroments';
+//import { enviroments } from 'enviroments/enviroments';
 import { PessoasModule } from './pessoas/pessoas.module';
 import { RolesModule } from './roles/roles.module';
 import { SimpleMiddleware } from './shared/middlewares/simple.middleware';
@@ -15,7 +15,7 @@ import { ChangeDataInterceptor } from './shared/interceptors/change-data.interce
 import { ErrorLogInterceptor } from './shared/interceptors/error.log.interceptor';
 import { MinhaExceptionFilter } from './shared/filters/my.excpetion.filter';
 import { IsAdminGuard } from './shared/guards/is-admin.guard';
-import { ConfigModule, ConfigService, ConfigType } from '@nestjs/config';
+import { ConfigModule, ConfigType } from '@nestjs/config';
 import appConfig from './app.config';
 
 @Module({
@@ -72,6 +72,11 @@ import appConfig from './app.config';
     ],
 })
 export class AppModule implements NestModule {
+    constructor() {
+        //console.log(process.env.VARIAVEL1);
+        //console.log(process.env.VARIAVEL2);
+    }
+
     configure(consumer: MiddlewareConsumer) {
         consumer.apply(SimpleMiddleware).forRoutes('recados');
     }
