@@ -28,3 +28,21 @@ Aplicação Rest módulo 1
 <p style="margin-left: 2em"> a) Para instalar: yarn add @nestjs/config</p>
 
 É importante lembrar que este módulo deve ser importado no app.module para funcionar corretamente.
+
+
+TEMP:
+
+DATABASE_TYPE='postgres'
+DATABASE_HOST='localhost'
+DATABASE_PORT=5432
+DATABASE_USERNAME='user_m1'
+DATABASE_DATABASE='nest-m1'
+DATABASE_PASSWORD='123456'
+DATABASE_AUTOLOADENTITIES=true
+DATABASE_SYNCHRONIZE=true
+
+JWT_SECRET='senhaSecretajwt'
+JWT_TOKEN_AUDIENCE='http://localhost:3000'
+JWT_TOKEN_ISSUE='http://localhost:3000'
+JWT_TTL=3600
+JWT_REFRESH_TTL=86400
