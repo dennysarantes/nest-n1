@@ -2,6 +2,7 @@ import {
     ConflictException,
     Injectable,
     NotFoundException,
+    UnauthorizedException,
 } from '@nestjs/common';
 import { CreatePessoaDto } from './dto/create-pessoa.dto';
 import { UpdatePessoaDto } from './dto/update-pessoa.dto';
@@ -11,6 +12,8 @@ import { Repository } from 'typeorm';
 import { UtilShared } from '../shared/util.shared';
 import { BcryptServiceProtocol } from '../shared/auth/hashing/bcrypt.service';
 import { HashingServiceProtocol } from '../shared/auth/hashing/hashing.service';
+import { TokenPayloadDto } from '../shared/auth/dto/token-payload-dto';
+import { TiposRolesEnum } from '../roles/model/tipos-roles.enum';
 
 @Injectable()
 export class PessoasService {
@@ -21,8 +24,13 @@ export class PessoasService {
         private readonly hashingService: HashingServiceProtocol
     ) {}
 
-    async create(createPessoaDto: CreatePessoaDto) {
+    async create(createPessoaDto: CreatePessoaDto, tokenPayload:TokenPayloadDto) {
         try {
+
+            if(!tokenPayload?.roles?.includes(TiposRolesEnum.ADMIN.toLocaleLowerCase())){
+                throw new UnauthorizedException('Usuário não possui permissão necessária para a ação.');
+            }
+
             console.log('createPessoaDto: ', createPessoaDto);
             const hash = await this.hashingService.hash(createPessoaDto.password);
 
@@ -72,7 +80,7 @@ export class PessoasService {
     }
 
     // Sé é permitido atualizar o nome e password da pessoa.
-    async update(id: number, updatePessoaDto: UpdatePessoaDto) {
+    async update(id: number, updatePessoaDto: UpdatePessoaDto, tokenPayload: TokenPayloadDto) {
 
 
         const passwordHash = await this.hashingService.hash(updatePessoaDto.password);
@@ -88,6 +96,15 @@ export class PessoasService {
         if (!pessoa) {
             throw new NotFoundException('Pessoa não encontrada');
         } else {
+
+            if(
+                    pessoa.id.toString() !== tokenPayload.sub.toString() &&
+                    !tokenPayload?.roles?.includes(TiposRolesEnum.ADMIN.toLocaleLowerCase())){
+
+                    throw new UnauthorizedException('Usuário não possui permissão para realizar a ação.');
+
+            }
+
             const pessoaAtualizada = await this.pessoaRepository.save(pessoa);
 
             return {
@@ -97,10 +114,19 @@ export class PessoasService {
         }
     }
 
-    async remove(id: number) {
+    async remove(id: number, tokenPayload: TokenPayloadDto) {
         const pessoaEncontrada = await this.findOne(id);
 
         if (pessoaEncontrada) {
+
+            if(
+                pessoaEncontrada.id.toString() !== tokenPayload.sub.toString() &&
+                !tokenPayload?.roles?.includes(TiposRolesEnum.ADMIN.toLocaleLowerCase())){
+
+                throw new UnauthorizedException('Usuário não possui permissão para realizar a ação.');
+
+        }
+
             await this.pessoaRepository.delete(id);
             return 'Pessoa removida com sucesso';
         } else {
