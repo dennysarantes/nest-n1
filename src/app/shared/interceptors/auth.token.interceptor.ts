@@ -18,7 +18,7 @@ export class AuthTokenInterceptor implements NestInterceptor {
         const url = context.switchToHttp().getRequest().url
         console.log('Intercept Authorization: ', authorization);
 
-        if (authorization || url === '/auth/autenticar') {
+        if (authorization || url === '/auth/login') {
             console.log("context.switchToHttp().getRequest().params: ", context.switchToHttp().getRequest().params);
             // Valida o Token aqui...
             return next.handle();

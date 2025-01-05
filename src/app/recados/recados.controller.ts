@@ -18,6 +18,7 @@ import {
     UseInterceptors,
     Req,
     Inject,
+    UseGuards,
 } from '@nestjs/common';
 import { RecadosService } from './recados.service';
 import { CreateRecadoDto } from './dto/create-recado.dto';
@@ -35,9 +36,14 @@ import { RemoveSpacesRegex } from '../shared/regex/remove-spaces.regex';
 import appConfig from '../app.config';
 import { ConfigType } from '@nestjs/config';
 import { ConfigService } from '@nestjs/config';
+import { TOKEN_PAYLOAD } from '../shared/auth/auth.constants';
+import { AuthTokenGuard } from '../shared/guards/AuthTokenGuard';
+import { TokenPayloadParam } from '../shared/auth/params/token-payload-params';
+import { TokenPayloadDto } from '../shared/auth/dto/token-payload-dto';
 
 @Controller('recados')
 @UsePipes(ParseIntIdPipe)
+@UseGuards(AuthTokenGuard)
 export class RecadosController {
     constructor(
         private readonly configService: ConfigService,
@@ -62,22 +68,23 @@ export class RecadosController {
         private readonly appConf: ConfigType<typeof appConfig>
 
     ) {
-        console.log(
+       /*  console.log(
             'dados de variáveis: ',
             configService.get('DATABASE_USERNAME'),
-        );
+        ); */
 
-        console.log('Server Name:', serverName);
+        /* console.log('Server Name:', serverName);
         console.log(removerSpacesRegex.execute('Server Name:' + serverName));
         console.log(apenasLowerCaseRegex.execute('ApenasLetrasMinúsculas'));
-        console.log('App config', appConf.database.database);
+        console.log('App config', appConf.database.database); */
 
     }
 
     @Get()
     @UseInterceptors(AddHeaderInterceptor, ErrorLogInterceptor)
-    findAll(@Headers() headers, @Query() paginatorDto?: PaginatorDto) {
-        console.log('controller...');
+    findAll(
+            @TokenPayloadParam() tokenPayload: TokenPayloadDto,
+            @Headers() headers, @Query() paginatorDto?: PaginatorDto) {
         return this.recadosService.findAll(paginatorDto);
     }
 
@@ -122,13 +129,16 @@ export class RecadosController {
     }
 
     @Post()
-    create(@Body() createRecadoDto: CreateRecadoDto) {
+    create(
+        @TokenPayloadParam() tokenPayload: TokenPayloadDto,
+        @Body() createRecadoDto: CreateRecadoDto) {
         console.log('createRecadoDto: ', createRecadoDto);
-        return this.recadosService.create(createRecadoDto);
+        return this.recadosService.create(createRecadoDto, tokenPayload);
     }
 
     @Patch(':id')
     async update(
+        @TokenPayloadParam() tokenPayload: TokenPayloadDto,
         @Param('id') id: number,
         @Body() updateRecadoDto: UpdateRecadoDto,
         @Res() res: Response,
@@ -137,7 +147,7 @@ export class RecadosController {
             throw new BadRequestException('O parâmetro ID é obrigatório');
         }
 
-        const upd = await this.recadosService.update(id, updateRecadoDto);
+        const upd = await this.recadosService.update(id, updateRecadoDto, tokenPayload);
 
         return upd === null
             ? res.status(400).json({ mensagem: 'Recado inexistente.' })
@@ -145,7 +155,10 @@ export class RecadosController {
     }
 
     @Delete(':id')
-    remove(@Param('id' /* , ParseIntPipe */) id: number) {
-        return this.recadosService.remove(id);
+    remove(
+        @TokenPayloadParam() tokenPayload: TokenPayloadDto,
+        @Param('id' /* , ParseIntPipe */) id: number) {
+            console.log("id: ", id);
+        return this.recadosService.remove(id, tokenPayload);
     }
 }

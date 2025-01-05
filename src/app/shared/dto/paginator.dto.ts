@@ -4,7 +4,7 @@ import { IsInt, IsOptional, Max, Min } from 'class-validator';
 export class PaginatorDto {
     @IsOptional()
     @IsInt()
-    @Min(0)
+    @Min(1)
     @Max(50)
     @Type(() => Number)
     limit: number;

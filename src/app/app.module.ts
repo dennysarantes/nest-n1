@@ -18,6 +18,7 @@ import { IsAdminGuard } from './shared/guards/is-admin.guard';
 import { ConfigModule, ConfigType } from '@nestjs/config';
 import appConfig from './app.config';
 import { AuthModule } from './shared/auth/auth.module';
+import { AuthTokenGuard } from './shared/guards/AuthTokenGuard';
 
 @Module({
     //imports: [ConceitoModule, CrudAutModule],
@@ -27,6 +28,7 @@ import { AuthModule } from './shared/auth/auth.module';
             //load: [appConfig]
         }),
         ConfigModule.forFeature(appConfig),
+
         TypeOrmModule.forRootAsync({
             imports: [ConfigModule.forFeature(appConfig)],
             inject: [appConfig.KEY],
@@ -51,26 +53,31 @@ import { AuthModule } from './shared/auth/auth.module';
     controllers: [AppController],
     providers: [
         AppService,
-        {
+        /* {
             provide: APP_FILTER,
             useClass: MinhaExceptionFilter,
-        },
-        {
+        }, */
+        /* {
             provide: APP_INTERCEPTOR,
             useClass: AuthTokenInterceptor,
-        },
+        }, */
         {
             provide: APP_INTERCEPTOR,
             useClass: ChangeDataInterceptor,
         },
+        /* {
+            provide: APP_GUARD,
+            useClass: AuthTokenGuard,
+        }, */
         {
             provide: APP_INTERCEPTOR,
             useClass: ErrorLogInterceptor,
         },
-        {
+
+        /* {
             provide: APP_GUARD,
             useClass: IsAdminGuard,
-        },
+        }, */
     ],
 })
 export class AppModule implements NestModule {
