@@ -17,8 +17,9 @@ export class IsAdminGuard implements CanActivate {
         console.log('url no guard: ', url);
         console.log('authorization no Guard: ', authorization);
 
-        if(url === '/pessoas/login'){return true}
-
+        if (url === '/pessoas/login') {
+            return true;
+        }
 
         // Aqui, teoricamente o guard faria uma busca em pessoa Service e verificaria o perfil do login e a rota.
         return from(this.pessoasService.findOne(1)).pipe(

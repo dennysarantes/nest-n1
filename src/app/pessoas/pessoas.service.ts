@@ -1,7 +1,7 @@
 import {
-    ConflictException,
     Injectable,
     NotFoundException,
+    NotImplementedException,
     UnauthorizedException,
 } from '@nestjs/common';
 import { CreatePessoaDto } from './dto/create-pessoa.dto';
@@ -9,11 +9,9 @@ import { UpdatePessoaDto } from './dto/update-pessoa.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Pessoa } from './entities/pessoa.entity';
 import { Repository } from 'typeorm';
-import { UtilShared } from '../shared/util.shared';
-import { BcryptServiceProtocol } from '../shared/auth/hashing/bcrypt.service';
 import { HashingServiceProtocol } from '../shared/auth/hashing/hashing.service';
 import { TokenPayloadDto } from '../shared/auth/dto/token-payload-dto';
-import { TiposRolesEnum } from '../roles/model/tipos-roles.enum';
+import { UtilShared } from '../shared/util.shared';
 
 @Injectable()
 export class PessoasService {
@@ -21,18 +19,14 @@ export class PessoasService {
         @InjectRepository(Pessoa)
         private readonly pessoaRepository: Repository<Pessoa>,
 
-        private readonly hashingService: HashingServiceProtocol
+        private readonly hashingService: HashingServiceProtocol,
     ) {}
 
-    async create(createPessoaDto: CreatePessoaDto, tokenPayload:TokenPayloadDto) {
+    async create(createPessoaDto: CreatePessoaDto) {
         try {
-
-            if(!tokenPayload?.roles?.includes(TiposRolesEnum.ADMIN.toLocaleLowerCase())){
-                throw new UnauthorizedException('Usuário não possui permissão necessária para a ação.');
-            }
-
-            console.log('createPessoaDto: ', createPessoaDto);
-            const hash = await this.hashingService.hash(createPessoaDto.password);
+            const hash = await this.hashingService.hash(
+                createPessoaDto.password,
+            );
 
             const novaPessoa = new Pessoa(
                 createPessoaDto.email,
@@ -41,15 +35,11 @@ export class PessoasService {
                 createPessoaDto.roles,
             );
 
-            console.log('novaPessoa: ', novaPessoa);
             const pessoaCriada = await this.pessoaRepository.save(novaPessoa);
             return pessoaCriada;
         } catch (error) {
-            if (error.code == '23503') {
-                throw new ConflictException('email já cadastrado');
-            }
-
-            throw error;
+            console.log('Descrição do erro: ', error.detail);
+            throw new NotImplementedException('Erro: ' + error.detail);
         }
     }
 
@@ -68,7 +58,6 @@ export class PessoasService {
         return pessoa;
     }
 
-
     async findByEmail(email: string) {
         const pessoa = await this.pessoaRepository.findOne({
             where: {
@@ -80,10 +69,14 @@ export class PessoasService {
     }
 
     // Sé é permitido atualizar o nome e password da pessoa.
-    async update(id: number, updatePessoaDto: UpdatePessoaDto, tokenPayload: TokenPayloadDto) {
-
-
-        const passwordHash = await this.hashingService.hash(updatePessoaDto.password);
+    async update(
+        id: number,
+        updatePessoaDto: UpdatePessoaDto,
+        tokenPayload: TokenPayloadDto,
+    ) {
+        const passwordHash = await this.hashingService.hash(
+            updatePessoaDto.password,
+        );
 
         const pessoa = await this.pessoaRepository.preload({
             id,
@@ -96,13 +89,13 @@ export class PessoasService {
         if (!pessoa) {
             throw new NotFoundException('Pessoa não encontrada');
         } else {
-
-            if(
-                    pessoa.id.toString() !== tokenPayload.sub.toString() &&
-                    !tokenPayload?.roles?.includes(TiposRolesEnum.ADMIN.toLocaleLowerCase())){
-
-                    throw new UnauthorizedException('Usuário não possui permissão para realizar a ação.');
-
+            if (
+                !UtilShared.tokenEhDoUsuario(tokenPayload, pessoa.id) &&
+                !UtilShared.usuarioEhAdmin(tokenPayload)
+            ) {
+                throw new UnauthorizedException(
+                    'Usuário não possui permissão para realizar a ação.',
+                );
             }
 
             const pessoaAtualizada = await this.pessoaRepository.save(pessoa);
@@ -118,14 +111,11 @@ export class PessoasService {
         const pessoaEncontrada = await this.findOne(id);
 
         if (pessoaEncontrada) {
-
-            if(
-                pessoaEncontrada.id.toString() !== tokenPayload.sub.toString() &&
-                !tokenPayload?.roles?.includes(TiposRolesEnum.ADMIN.toLocaleLowerCase())){
-
-                throw new UnauthorizedException('Usuário não possui permissão para realizar a ação.');
-
-        }
+            if (!UtilShared.usuarioEhAdmin(tokenPayload)) {
+                throw new UnauthorizedException(
+                    'Usuário não possui permissão para realizar a ação.',
+                );
+            }
 
             await this.pessoaRepository.delete(id);
             return 'Pessoa removida com sucesso';

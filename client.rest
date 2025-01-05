@@ -90,19 +90,19 @@ Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
 {
-    "email": "novo_usuario_comumX@app.com",
+    "email": "novoUsuario@app.com",
     "password": "12345678",
-    "nome":"Usuario comum do sistema 03",
-    "roles":[{"id": 1}]
+    "nome":"Novo usuario teste",
+    "roles":[{"id": 3}]
 }
 
 ### Remover Pessoa
-DELETE {{baseUrl}}pessoas/1
+DELETE {{baseUrl}}pessoas/3
 Authorization: Bearer {{accessToken}}
 
 
 ### Atualizar uma pessoa
-PATCH {{baseUrl}}pessoas/5
+PATCH {{baseUrl}}pessoas/16
 Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
@@ -126,7 +126,7 @@ POST {{baseUrl}}auth/login
 Content-Type: application/json
 
 {
-    "email": "usuario_comum@app.com",
+    "email": "joao@app.com",
     "password": "12345678"
 }
 
@@ -136,6 +136,6 @@ POST {{baseUrl}}auth/renovar
 Content-Type: application/json
 
 {
-    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImVtYWlsIjoidXN1YXJpb19jb211bUBhcHAuY29tIiwicm9sZXMiOlsidXNlcnMiXSwiaWF0IjoxNzM1OTQxOTk4LCJleHAiOjE3MzU5NDU1OTgsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMCIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMCJ9.1aUuxRLSHH0XiaNcKxDX9rEbBLPlPQ77nBmHe1vMvXs"
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjE2LCJlbWFpbCI6ImpvYW9AYXBwLmNvbSIsInJvbGVzIjpbImFkbWluIl0sImlhdCI6MTczNjA5MTAxOCwiZXhwIjoxNzM2MDk0NjE4LCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjMwMDAiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjMwMDAifQ.IECkLkJSzdKtGkDknLIMMuWZ9JO1xPe_xoNWg0Rus9Y"
 }
 

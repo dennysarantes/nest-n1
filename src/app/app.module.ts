@@ -1,4 +1,9 @@
-import { forwardRef, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import {
+    forwardRef,
+    MiddlewareConsumer,
+    Module,
+    NestModule,
+} from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 /* import { ConceitoModule } from './conceito/conceito.module';
@@ -9,16 +14,16 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PessoasModule } from './pessoas/pessoas.module';
 import { RolesModule } from './roles/roles.module';
 import { SimpleMiddleware } from './shared/middlewares/simple.middleware';
-import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
-import { AuthTokenInterceptor } from './shared/interceptors/auth.token.interceptor';
+import { /* APP_FILTER, APP_GUARD, */ APP_INTERCEPTOR } from '@nestjs/core';
+//import { AuthTokenInterceptor } from './shared/interceptors/auth.token.interceptor';
 import { ChangeDataInterceptor } from './shared/interceptors/change-data.interceptor';
 import { ErrorLogInterceptor } from './shared/interceptors/error.log.interceptor';
-import { MinhaExceptionFilter } from './shared/filters/my.excpetion.filter';
-import { IsAdminGuard } from './shared/guards/is-admin.guard';
+//import { MinhaExceptionFilter } from './shared/filters/my.excpetion.filter';
+//import { IsAdminGuard } from './shared/guards/is-admin.guard';
 import { ConfigModule, ConfigType } from '@nestjs/config';
 import appConfig from './app.config';
 import { AuthModule } from './shared/auth/auth.module';
-import { AuthTokenGuard } from './shared/guards/AuthTokenGuard';
+//import { AuthTokenGuard } from './shared/guards/AuthTokenGuard';
 
 @Module({
     //imports: [ConceitoModule, CrudAutModule],
@@ -33,18 +38,19 @@ import { AuthTokenGuard } from './shared/guards/AuthTokenGuard';
             imports: [ConfigModule.forFeature(appConfig)],
             inject: [appConfig.KEY],
             useFactory: async (appConfg: ConfigType<typeof appConfig>) => {
-              return {
-                type: appConfg.database.type,
-                host: appConfg.database.host,
-                port: appConfg.database.port,
-                username: appConfg.database.username,
-                database: appConfg.database.database,
-                password: appConfg.database.password,
-                autoLoadEntities: appConfg.database.autoLoadEntities,
-                synchronize: appConfg.database.synchronize,
-              };
+                return {
+                    type: appConfg.database.type,
+                    host: appConfg.database.host,
+                    port: appConfg.database.port,
+                    username: appConfg.database.username,
+                    database: appConfg.database.database,
+                    password: appConfg.database.password,
+                    autoLoadEntities: appConfg.database.autoLoadEntities,
+                    synchronize: appConfg.database.synchronize,
+                    cache: false,
+                };
             },
-          }),
+        }),
         RecadosModule,
         RolesModule,
         forwardRef(() => PessoasModule),
