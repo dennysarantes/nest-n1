@@ -23,7 +23,9 @@ import { ErrorLogInterceptor } from './shared/interceptors/error.log.interceptor
 import { ConfigModule, ConfigType } from '@nestjs/config';
 import appConfig from './app.config';
 import { AuthModule } from './shared/auth/auth.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
 //import { AuthTokenGuard } from './shared/guards/AuthTokenGuard';
+import * as path from 'path';
 
 @Module({
     //imports: [ConceitoModule, CrudAutModule],
@@ -50,6 +52,10 @@ import { AuthModule } from './shared/auth/auth.module';
                     cache: false,
                 };
             },
+        }),
+        ServeStaticModule.forRoot({
+            rootPath: path.resolve(__dirname, '..', '..', '..', 'pictures'),
+            serveRoot: '/pictures',
         }),
         RecadosModule,
         RolesModule,

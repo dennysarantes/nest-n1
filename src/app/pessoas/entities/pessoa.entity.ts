@@ -43,6 +43,12 @@ export class Pessoa {
     @OneToMany(() => Recado, (reacado) => reacado.de)
     recados: Recado[];
 
+    @Column({ type: 'bytea', nullable: true })
+    foto: Buffer; // ou string se usar Base64
+
+    @Column({ type: 'varchar', length: 255, nullable: true })
+    nomeFoto: string;
+
     @CreateDateColumn()
     createdAt?: Date;
 

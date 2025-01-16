@@ -1,4 +1,5 @@
 import {
+    BadRequestException,
     Injectable,
     NotFoundException,
     NotImplementedException,
@@ -12,6 +13,8 @@ import { Repository } from 'typeorm';
 import { HashingServiceProtocol } from '../shared/auth/hashing/hashing.service';
 import { TokenPayloadDto } from '../shared/auth/dto/token-payload-dto';
 import { UtilShared } from '../shared/util.shared';
+import * as path from 'path';
+import * as fs from 'fs/promises';
 
 @Injectable()
 export class PessoasService {
@@ -121,6 +124,79 @@ export class PessoasService {
             return 'Pessoa removida com sucesso';
         } else {
             return 'Id inexistente';
+        }
+    }
+
+    async uploadFotoNoBanco(
+        file: Express.Multer.File,
+        tokenPayload: TokenPayloadDto,
+    ) {
+        try {
+            // Verifica se o arquivo foi fornecido corretamente
+            this.ehFileValido(file);
+            const fileExtension = this.getFileExtention(file);
+
+            const fileName = `${tokenPayload.sub}.${fileExtension}`;
+            console.log('fileName: ', fileName);
+
+            // Atualiza a entidade Pessoa com a nova foto
+            const pessoa: Pessoa = await this.pessoaRepository.findOne({
+                where: { id: Number(tokenPayload.sub) },
+            });
+
+            pessoa.foto = file.buffer;
+            pessoa.nomeFoto = fileName;
+
+            await this.pessoaRepository.save(pessoa);
+
+            return { mesagem: 'Foto salva com sucesso!' };
+        } catch (error) {
+            console.error(error);
+            return error;
+        }
+    }
+
+    async uploadFotoFileSystem(
+        file: Express.Multer.File,
+        tokenPayload: TokenPayloadDto,
+    ) {
+        this.ehFileValido(file);
+        const fileExtension = this.getFileExtention(file);
+
+        const fileName = `${tokenPayload.sub + '_' + Date.now().toString()}.${fileExtension}`;
+        const fileFullPath = path.resolve(process.cwd(), 'pictures', fileName);
+
+        await fs.writeFile(fileFullPath, file.buffer);
+
+        return {
+            mensagem: 'Imagem salva na pasta pictures com sucesso.',
+            fieldname: file.fieldname,
+            originalname: file.originalname,
+        };
+    }
+
+    ehFileValido(file: Express.Multer.File) {
+        if (
+            !file ||
+            !file.buffer ||
+            file.size < 50 * 1024 ||
+            file.size > 999999
+        ) {
+            throw new BadRequestException(
+                'Imagem inválida. Tamanho máximo: 1MB',
+            );
+        }
+    }
+
+    getFileExtention(file: Express.Multer.File) {
+        try {
+            return path
+                ?.extname(file?.originalname)
+                ?.toLocaleLowerCase()
+                ?.substring(1);
+        } catch (error) {
+            console.error('Erro: ', error);
+            throw new BadRequestException('Arquivo inválido');
         }
     }
 }

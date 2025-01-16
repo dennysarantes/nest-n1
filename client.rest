@@ -139,3 +139,32 @@ Content-Type: application/json
     "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjE2LCJlbWFpbCI6ImpvYW9AYXBwLmNvbSIsInJvbGVzIjpbImFkbWluIl0sImlhdCI6MTczNjA5MTAxOCwiZXhwIjoxNzM2MDk0NjE4LCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjMwMDAiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjMwMDAifQ.IECkLkJSzdKtGkDknLIMMuWZ9JO1xPe_xoNWg0Rus9Y"
 }
 
+
+### Upload - foto usuario no Banco de dados
+POST {{baseUrl}}pessoas/upload-foto-banco
+Authorization: Bearer {{accessToken}}
+Content-Type: multipart/form-data; boundary=----DelimitadorHttp
+
+------DelimitadorHttp
+Content-Disposition: form-data; name="foto"; filename="arquivo.png"
+Content-Type: image/png
+
+< ./dev/images/arquivo.png
+------DelimitadorHttp--
+
+
+### Upload - foto usuario no file system
+POST {{baseUrl}}pessoas/upload-foto-file-system
+Authorization: Bearer {{accessToken}}
+Content-Type: multipart/form-data; boundary=----DelimitadorHttp
+
+------DelimitadorHttp
+Content-Disposition: form-data; name="foto"; filename="arquivo.png"
+Content-Type: image/png
+
+< ./dev/images/arquivo.png
+------DelimitadorHttp--
+
+
+### Get Fotos
+GET {{baseUrl}}pictures/16.png
