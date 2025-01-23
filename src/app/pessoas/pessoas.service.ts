@@ -35,14 +35,16 @@ export class PessoasService {
                 createPessoaDto.email,
                 hash,
                 createPessoaDto.nome,
-                createPessoaDto.roles,
+                createPessoaDto?.roles,
             );
 
-            const pessoaCriada = await this.pessoaRepository.save(novaPessoa);
-            return pessoaCriada;
+            return await this.pessoaRepository.save(novaPessoa);
         } catch (error) {
-            console.log('Descrição do erro: ', error.detail);
-            throw new NotImplementedException('Erro: ' + error.detail);
+            /*      console.log(
+                'Descrição do erro: ',
+                error.detail ?? 'erro desconhecido',
+            ); */
+            throw new NotImplementedException('Erro: ' + error?.detail);
         }
     }
 
@@ -137,7 +139,7 @@ export class PessoasService {
             const fileExtension = this.getFileExtention(file);
 
             const fileName = `${tokenPayload.sub}.${fileExtension}`;
-            console.log('fileName: ', fileName);
+            //console.log('fileName: ', fileName);
 
             // Atualiza a entidade Pessoa com a nova foto
             const pessoa: Pessoa = await this.pessoaRepository.findOne({
@@ -151,8 +153,8 @@ export class PessoasService {
 
             return { mesagem: 'Foto salva com sucesso!' };
         } catch (error) {
-            console.error(error);
-            return error;
+            //console.error(error);
+            throw error;
         }
     }
 
@@ -160,19 +162,29 @@ export class PessoasService {
         file: Express.Multer.File,
         tokenPayload: TokenPayloadDto,
     ) {
-        this.ehFileValido(file);
-        const fileExtension = this.getFileExtention(file);
+        try {
+            this.ehFileValido(file);
+            const fileExtension = this.getFileExtention(file);
 
-        const fileName = `${tokenPayload.sub + '_' + Date.now().toString()}.${fileExtension}`;
-        const fileFullPath = path.resolve(process.cwd(), 'pictures', fileName);
+            const fileName = `${tokenPayload.sub + '_' + Date.now().toString()}.${fileExtension}`;
+            const fileFullPath = path.resolve(
+                process.cwd(),
+                'pictures',
+                fileName,
+            );
 
-        await fs.writeFile(fileFullPath, file.buffer);
+            //console.log('escrevendo arquivo:');
+            await fs.writeFile(fileFullPath, file.buffer);
 
-        return {
-            mensagem: 'Imagem salva na pasta pictures com sucesso.',
-            fieldname: file.fieldname,
-            originalname: file.originalname,
-        };
+            return {
+                mensagem: 'Imagem salva na pasta pictures com sucesso.',
+                fieldname: file.fieldname,
+                originalname: file.originalname,
+            };
+        } catch (error) {
+            //console.error('Aconteceu um erro:', error);
+            throw error;
+        }
     }
 
     ehFileValido(file: Express.Multer.File) {
@@ -182,8 +194,9 @@ export class PessoasService {
             file.size < 50 * 1024 ||
             file.size > 999999
         ) {
+            //console.log('Entrou aqui...');
             throw new BadRequestException(
-                'Imagem inválida. Tamanho máximo: 1MB',
+                'Imagem inválida.Tamanho mínimo: 50Kb e  Tamanho máximo: 1MB',
             );
         }
     }
@@ -194,8 +207,9 @@ export class PessoasService {
                 ?.extname(file?.originalname)
                 ?.toLocaleLowerCase()
                 ?.substring(1);
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {
-            console.error('Erro: ', error);
+            //console.error('Erro: ', error);
             throw new BadRequestException('Arquivo inválido');
         }
     }

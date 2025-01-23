@@ -31,7 +31,7 @@ export class PessoasController {
 
     @UseGuards(AuthTokenGuard)
     @Post()
-    @SetRoutePolicy(TiposRolesEnum.ADMIN, 'criar_usuario') //Rota exclusiva para admins
+    //@SetRoutePolicy(TiposRolesEnum.ADMIN, 'criar_usuario') //Rota exclusiva para admins
     create(@Body() createPessoaDto: CreatePessoaDto) {
         return this.pessoasService.create(createPessoaDto);
     }
@@ -40,7 +40,6 @@ export class PessoasController {
     @SetRoutePolicy(TiposRolesEnum.USERS, 'buscar_usuarios')
     @Get()
     findAll() {
-        console.log('buscar todas as pessoas...');
         return this.pessoasService.findAll();
     }
 
@@ -84,8 +83,6 @@ export class PessoasController {
         foto: Express.Multer.File,
         @TokenPayloadParam() tokenPayload: TokenPayloadDto,
     ) {
-        console.log(foto);
-
         return this.pessoasService.uploadFotoNoBanco(foto, tokenPayload);
     }
 

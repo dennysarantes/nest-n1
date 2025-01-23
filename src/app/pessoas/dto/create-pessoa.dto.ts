@@ -5,6 +5,7 @@ import {
     IsString,
     MinLength,
 } from 'class-validator';
+import { Recado } from 'src/app/recados/entities/recado.entity';
 import { Role } from 'src/app/roles/entities/role.entity';
 
 export class CreatePessoaDto {
@@ -27,4 +28,7 @@ export class CreatePessoaDto {
 
     @IsOptional()
     readonly roles?: Role[];
+
+    @IsOptional()
+    readonly recados?: Recado[];
 }
