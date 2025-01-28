@@ -14,7 +14,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PessoasModule } from './pessoas/pessoas.module';
 import { RolesModule } from './roles/roles.module';
 import { SimpleMiddleware } from './shared/middlewares/simple.middleware';
-import { /* APP_FILTER, APP_GUARD, */ APP_INTERCEPTOR } from '@nestjs/core';
+import {
+    /* APP_FILTER, APP_GUARD, */ APP_GUARD,
+    APP_INTERCEPTOR,
+} from '@nestjs/core';
 //import { AuthTokenInterceptor } from './shared/interceptors/auth.token.interceptor';
 import { ChangeDataInterceptor } from './shared/interceptors/change-data.interceptor';
 import { ErrorLogInterceptor } from './shared/interceptors/error.log.interceptor';
@@ -26,10 +29,19 @@ import { AuthModule } from './shared/auth/auth.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 //import { AuthTokenGuard } from './shared/guards/AuthTokenGuard';
 import * as path from 'path';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
     //imports: [ConceitoModule, CrudAutModule],
     imports: [
+        ThrottlerModule.forRoot([
+            {
+                ttl: 60000, // tempo de vida em ms (1000 == 1s)
+                limit: 10, // Limite de requisições dentro do ttl
+                blockDuration: 5000, // tempo de bloqueio em ms
+            },
+        ]),
+
         ConfigModule.forRoot({
             envFilePath: 'enviroments/.env',
             //load: [appConfig]
@@ -64,6 +76,10 @@ import * as path from 'path';
     ],
     controllers: [AppController],
     providers: [
+        {
+            provide: APP_GUARD,
+            useClass: ThrottlerGuard,
+        },
         AppService,
         /* {
             provide: APP_FILTER,

@@ -46,3 +46,7 @@ JWT_TOKEN_AUDIENCE='http://localhost:3000'
 JWT_TOKEN_ISSUE='http://localhost:3000'
 JWT_TTL=3600
 JWT_REFRESH_TTL=86400
+
+
+5- Ao finalizar o projeto (fazer o build), basta rodar npm run build (a aplicação será buildada na pasta dist);
+6- para subir a aplicação, rode node .\dist\main.js
