@@ -4,10 +4,14 @@ export class AutenticarPessoaDto {
     constructor() {}
 
     @IsEmail()
-    @IsNotEmpty()
+    @IsNotEmpty({
+        message: 'email é obrigatório.',
+    })
     readonly email: string;
 
     @IsString()
-    @IsNotEmpty()
+    @IsNotEmpty({
+        message: 'Password é obrigatório.',
+    })
     readonly password: string;
 }

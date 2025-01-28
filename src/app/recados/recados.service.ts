@@ -1,10 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateRecadoDto } from './dto/create-recado.dto';
 import { UpdateRecadoDto } from './dto/update-recado.dto';
 import { Recado } from './entities/recado.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PaginatorDto } from '../shared/dto/paginator.dto';
+import { TokenPayloadDto } from '../shared/auth/dto/token-payload-dto';
+import { Pessoa } from '../pessoas/entities/pessoa.entity';
+import { UtilShared } from '../shared/util.shared';
 
 @Injectable()
 export class RecadosService {
@@ -13,10 +16,15 @@ export class RecadosService {
         private readonly recadoRepository: Repository<Recado>,
     ) {}
 
-    async create(createRecadoDto: CreateRecadoDto) {
+    async create(
+        createRecadoDto: CreateRecadoDto,
+        tokenPayload: TokenPayloadDto,
+    ) {
+        const pessoa = { id: tokenPayload.sub } as Pessoa;
+
         const novoRecado = new Recado(
             createRecadoDto.texto,
-            createRecadoDto.de,
+            pessoa,
             createRecadoDto.para,
             false,
             new Date(),
@@ -75,8 +83,8 @@ export class RecadosService {
 
         return {
             data: [...results],
-            total,
-            currentPage: page,
+            totalElements: total,
+            currentPage: page + 1,
             totalPages: Math.ceil(total / limit),
         };
     }
@@ -91,7 +99,28 @@ export class RecadosService {
         return recado;
     }
 
-    async update(id: number, updateRecadoDto: UpdateRecadoDto) {
+    async update(
+        id: number,
+        updateRecadoDto: UpdateRecadoDto,
+        tokenPayload: TokenPayloadDto,
+    ) {
+        const recadoEncontrado = await this.recadoRepository.findOneOrFail({
+            where: { id },
+            relations: ['de'],
+        });
+
+        if (
+            !UtilShared.tokenEhDoUsuario(
+                tokenPayload,
+                recadoEncontrado.de.id,
+            ) &&
+            !UtilShared.usuarioEhAdmin(tokenPayload)
+        ) {
+            throw new UnauthorizedException(
+                'Usuário não possui permissão para a ação.',
+            );
+        }
+
         const recado = await this.recadoRepository.preload({
             id,
             ...updateRecadoDto,
@@ -133,8 +162,23 @@ export class RecadosService {
         }
     }
 
-    async remove(id: number) {
-        const recadoEncontrado = await this.findOne(id);
+    async remove(id: number, tokenPayload: TokenPayloadDto) {
+        const recadoEncontrado = await this.recadoRepository.findOne({
+            where: { id },
+            relations: ['de'],
+        });
+
+        if (
+            !UtilShared.tokenEhDoUsuario(
+                tokenPayload,
+                recadoEncontrado.de.id,
+            ) &&
+            !UtilShared.usuarioEhAdmin(tokenPayload)
+        ) {
+            throw new UnauthorizedException(
+                'Usuário não possui permissão para a ação.',
+            );
+        }
 
         if (recadoEncontrado) {
             await this.recadoRepository.delete(id);

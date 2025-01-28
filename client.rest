@@ -1,8 +1,10 @@
 @baseUrl = http://localhost:3000/
+@accessToken = {{authLogin.response.body.token}}
 
 ### APPController teste
 # @name AppControllerGetHello
 GET {{baseUrl}}teste
+Authorization: Bearer {{accessToken}}
 
 ### AppControllerConceitoTeste
 # @name AppControllerConceitoTeste
@@ -11,9 +13,9 @@ GET {{baseUrl}}conceitos/teste
 ### Buscar todos recados
 # @name AppControllerRecados
 GET {{baseUrl}}recados
-?limit=0
-&page=0
-Authorization: Bearer 1234567
+?limit=1
+&page=3
+Authorization: Bearer {{accessToken}}
 
 ### Buscar todos recados com status code modificado
 GET {{baseUrl}}recados/todos
@@ -23,33 +25,34 @@ GET {{baseUrl}}recados/todos
 ### Buscar recado por id
 GET {{baseUrl}}recados/3
 #teste: 12345
-Authorization: Bearer 1234567
+Authorization: Bearer {{accessToken}}
 
 ### Criar um recado
 POST {{baseUrl}}recados
 Content-Type: application/json
+Authorization: Bearer {{accessToken}}
 
 {
-    "texto": "abcd abasdsad saddsa ",
-    "de":{"id": 14},
-    "para":[{"id":3}, {"id": 15}]
+    "texto": "Recado especial de natal.",
+    "para":[{"id":1}, {"id":2}]
 }
 
 
 ### Atualizar um recado
-PATCH {{baseUrl}}recados/4
+PATCH {{baseUrl}}recados/6
 Content-Type: application/json
+Authorization: Bearer {{accessToken}}
 
 {
-   "texto": "Mensagem atualizada 4",
-   "de":{"id": 14},
+   "texto": "Mensagem atualizada 2",
    "para": [{"id":3}],
    "lido": true
 }
 
 
 ### Remover recado
-DELETE {{baseUrl}}recados/2
+DELETE {{baseUrl}}recados/5
+Authorization: Bearer {{accessToken}}
 
 
 
@@ -58,32 +61,25 @@ DELETE {{baseUrl}}recados/2
 
 ### Buscar todos roles
 GET {{baseUrl}}roles
-Authorization: Bearer 1234567
+Authorization: Bearer {{accessToken}}
 
 ### Criar uma role
 POST {{baseUrl}}roles
 Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
 
 {
-    "nome": "users",
-    "descricao": "Role de usuários comuns"
+    "nome": "maintainer",
+    "descricao": "Role de administradores do sistema"
 }
 
 
 // API PESSOAS
 
-
-### Autenticar pessoas
-POST {{baseUrl}}pessoas/autenticar
-
-{
-    "email": "users",
-    "password": "1234"
-}
-
 ### Buscar todas pessoas
 GET {{baseUrl}}pessoas
-Authorization: Bearer 1234567
+Authorization: Bearer {{accessToken}}
 
 ### Buscar pessoa por id
 GET {{baseUrl}}pessoas/3
@@ -91,24 +87,84 @@ GET {{baseUrl}}pessoas/3
 ### Criar uma pessoa
 POST {{baseUrl}}pessoas
 Content-Type: application/json
+Authorization: Bearer {{accessToken}}
 
 {
-    "email": "sofia@app.com",
+    "email": "novoUsuario@app.com",
     "password": "12345678",
-    "nome":"Sofia Arantes",
-    "roles":[{"id": 2}]
+    "nome":"Novo usuario teste",
+    "roles":[{"id": 3}]
 }
 
 ### Remover Pessoa
-DELETE {{baseUrl}}pessoas/15
+DELETE {{baseUrl}}pessoas/3
+Authorization: Bearer {{accessToken}}
 
 
 ### Atualizar uma pessoa
-PATCH {{baseUrl}}pessoas/10
+PATCH {{baseUrl}}pessoas/16
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+    "password": "12345678"
+}
+
+#{
+#    "nome":"nova pessoa",
+#    "email": "sofia@app.com",
+#    "password":
+#    "roles":[{"id": 1}, {"id": 2}, {"id": 3}]
+#}
+
+
+//API AUTH
+
+### Login Auth
+# @name authLogin
+POST {{baseUrl}}auth/login
 Content-Type: application/json
 
 {
-    "nome":"nova pessoa",
-    "email": "teste@teste.com",
-    "roles":[{"id": 1}, {"id": 2}, {"id": 3}]
+    "email": "joao@app.com",
+    "password": "12345678"
 }
+
+
+### Refresh token
+POST {{baseUrl}}auth/renovar
+Content-Type: application/json
+
+{
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjE2LCJlbWFpbCI6ImpvYW9AYXBwLmNvbSIsInJvbGVzIjpbImFkbWluIl0sImlhdCI6MTczNjA5MTAxOCwiZXhwIjoxNzM2MDk0NjE4LCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjMwMDAiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjMwMDAifQ.IECkLkJSzdKtGkDknLIMMuWZ9JO1xPe_xoNWg0Rus9Y"
+}
+
+
+### Upload - foto usuario no Banco de dados
+POST {{baseUrl}}pessoas/upload-foto-banco
+Authorization: Bearer {{accessToken}}
+Content-Type: multipart/form-data; boundary=----DelimitadorHttp
+
+------DelimitadorHttp
+Content-Disposition: form-data; name="foto"; filename="arquivo.png"
+Content-Type: image/png
+
+< ./dev/images/arquivo.png
+------DelimitadorHttp--
+
+
+### Upload - foto usuario no file system
+POST {{baseUrl}}pessoas/upload-foto-file-system
+Authorization: Bearer {{accessToken}}
+Content-Type: multipart/form-data; boundary=----DelimitadorHttp
+
+------DelimitadorHttp
+Content-Disposition: form-data; name="foto"; filename="arquivo.png"
+Content-Type: image/png
+
+< ./dev/images/arquivo.png
+------DelimitadorHttp--
+
+
+### Get Fotos
+GET {{baseUrl}}pictures/16.png

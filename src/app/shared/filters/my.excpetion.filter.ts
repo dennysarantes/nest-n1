@@ -12,6 +12,6 @@ export class MinhaExceptionFilter implements ExceptionFilter {
 
         const res = host.switchToHttp().getResponse();
 
-        res.status(404).json({ mensagem: 'Erro filtrado.' });
+        res.status(404).json({ mensagem: 'Erro filtradox.' });
     }
 }

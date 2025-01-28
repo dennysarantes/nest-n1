@@ -1,23 +1,25 @@
 import { Role } from 'src/app/roles/entities/role.entity';
 import {
-    BeforeInsert,
-    BeforeUpdate,
+    /*  BeforeInsert,
+    BeforeUpdate, */
     Column,
     CreateDateColumn,
     Entity,
+    Index,
     JoinTable,
     ManyToMany,
     OneToMany,
     PrimaryGeneratedColumn,
-    Unique,
+    //Unique,
     UpdateDateColumn,
 } from 'typeorm';
 import { StatusPessoaEnum } from '../model/status-pessoa.enum';
-import { UtilShared } from 'src/app/shared/util.shared';
+//import { UtilShared } from 'src/app/shared/util.shared';
 import { Recado } from 'src/app/recados/entities/recado.entity';
+//import { BcryptServiceProtocol } from 'src/app/shared/auth/hashing/bcrypt.service';
 
 @Entity()
-@Unique(['email'])
+@Index('email_unique', ['email'], { unique: true })
 export class Pessoa {
     @PrimaryGeneratedColumn()
     id: number;
@@ -41,6 +43,12 @@ export class Pessoa {
     @OneToMany(() => Recado, (reacado) => reacado.de)
     recados: Recado[];
 
+    @Column({ type: 'bytea', nullable: true })
+    foto: Buffer; // ou string se usar Base64
+
+    @Column({ type: 'varchar', length: 255, nullable: true })
+    nomeFoto: string;
+
     @CreateDateColumn()
     createdAt?: Date;
 
@@ -53,6 +61,7 @@ export class Pessoa {
         nome: string,
         roles?: Role[],
         recados?: Recado[],
+        //private readonly bcryptService?: BcryptServiceProtocol,
     ) {
         if (email !== undefined) this.email = email;
         if (passwordHash !== undefined) this.passwordHash = passwordHash;
@@ -61,9 +70,9 @@ export class Pessoa {
         if (recados !== undefined) this.recados = recados;
     }
 
-    @BeforeInsert()
+    /*     @BeforeInsert()
     @BeforeUpdate()
-    updatePassword() {
-        this.passwordHash = UtilShared.criptografar(this.passwordHash);
-    }
+    async updatePassword() {
+        this.passwordHash =  await this.bcryptService.hash(this.passwordHash);
+    } */
 }

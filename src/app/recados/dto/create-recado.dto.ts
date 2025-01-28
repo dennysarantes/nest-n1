@@ -22,11 +22,6 @@ export class CreateRecadoDto {
     })
     readonly para: Pessoa[];
 
-    @IsNotEmpty({
-        message: 'Remetente é obrigatório.',
-    })
-    readonly de: Pessoa;
-
     constructor() {}
 }
 

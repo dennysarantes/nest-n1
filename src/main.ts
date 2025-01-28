@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
 import { ValidationPipe } from '@nestjs/common';
+import helmet from 'helmet';
 //import { SimpleMiddleware } from './app/shared/middlewares/simple.middleware';
 //import { CacheInterceptor } from './app/shared/interceptors/cache.interceptor';
 
@@ -16,10 +17,20 @@ async function bootstrap() {
         new ValidationPipe({
             whitelist: true, //remove chaves que não estão no DTO
             forbidNonWhitelisted: true, // retorna erro quando chave DTO não existir
-            transform: false, // true tenta transformar os tipos de param e dtos
+            transform: true, // true tenta transformar os tipos de param e dtos
         }),
     );
 
-    await app.listen(process.env.PORT ?? 3000);
+    if (process.env.AMBIENTE === 'prd') {
+        // HELMET -> cabeçalhos de segurança no protocolo HTTP
+        app.use(helmet());
+
+        // cors -> quais domínios vão poder fazer request
+        app.enableCors({
+            origin: 'https://minhaaplicacao.com.br',
+        });
+    }
+
+    await app.listen(process.env.APP_PORT ?? 3000);
 }
 bootstrap();
