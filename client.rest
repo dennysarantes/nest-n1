@@ -34,7 +34,7 @@ Authorization: Bearer {{accessToken}}
 
 {
     "texto": "Recado especial de natal.",
-    "para":[{"id":1}, {"id":2}]
+    "para":[{"id":32}, {"id":3}]
 }
 
 

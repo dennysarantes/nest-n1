@@ -48,6 +48,7 @@ export class AuthTokenGuard implements CanActivate {
                 context.switchToHttp().getRequest(),
                 payload,
             );
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {
             this.lancarErro(true);
         }

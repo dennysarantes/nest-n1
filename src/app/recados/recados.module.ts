@@ -9,11 +9,16 @@ import { enviroments } from 'enviroments/enviroments';
 import { RegexFactory } from '../shared/regex/regex.factory';
 import { ConfigModule } from '@nestjs/config';
 import appConfig from '../app.config';
+import { EmailModule } from 'src/email/email.module';
+import { PessoasModule } from '../pessoas/pessoas.module';
+//import { EmailService } from 'src/email/email.service';
 
 @Module({
     imports: [
         ConfigModule.forFeature(appConfig),
-        TypeOrmModule.forFeature([Recado])
+        TypeOrmModule.forFeature([Recado]),
+        EmailModule,
+        PessoasModule,
     ],
     controllers: [RecadosController],
     providers: [

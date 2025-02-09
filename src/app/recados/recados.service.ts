@@ -8,19 +8,27 @@ import { PaginatorDto } from '../shared/dto/paginator.dto';
 import { TokenPayloadDto } from '../shared/auth/dto/token-payload-dto';
 import { Pessoa } from '../pessoas/entities/pessoa.entity';
 import { UtilShared } from '../shared/util.shared';
+import { EmailService } from 'src/email/email.service';
+import { PessoasService } from '../pessoas/pessoas.service';
 
 @Injectable()
 export class RecadosService {
     constructor(
         @InjectRepository(Recado)
         private readonly recadoRepository: Repository<Recado>,
+
+        private readonly pessoaService: PessoasService,
+        private readonly emailService: EmailService,
     ) {}
 
     async create(
         createRecadoDto: CreateRecadoDto,
         tokenPayload: TokenPayloadDto,
     ) {
-        const pessoa = { id: tokenPayload.sub } as Pessoa;
+        const pessoa = {
+            id: tokenPayload.sub,
+            email: tokenPayload.email,
+        } as Pessoa;
 
         const novoRecado = new Recado(
             createRecadoDto.texto,
@@ -28,6 +36,31 @@ export class RecadosService {
             createRecadoDto.para,
             false,
             new Date(),
+        );
+
+        console.log('createRecadoDto.para: ', createRecadoDto.para);
+
+        // Usando Promise.all para aguardar todas as operações assíncronas
+        const listaDestinatarios = await Promise.all(
+            createRecadoDto.para.map(async (pessoa) => {
+                const destinatario = await this.pessoaService.findOne(
+                    pessoa.id,
+                );
+                return destinatario;
+            }),
+        );
+
+        console.log('listaDestinatarios: ', listaDestinatarios);
+
+        // Enviando emails para todos os destinatários
+        await Promise.all(
+            listaDestinatarios.map(async (d) => {
+                await this.emailService.sendEmail(
+                    d.email,
+                    `Você recebeu um email de ${novoRecado.de.email}`,
+                    novoRecado.texto,
+                );
+            }),
         );
 
         const recadoCriado = await this.recadoRepository.save(novoRecado);
