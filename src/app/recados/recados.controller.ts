@@ -7,8 +7,8 @@ import {
     Param,
     Delete,
     Headers,
-    HttpCode,
-    HttpStatus,
+    //HttpCode,
+    //HttpStatus,
     Query,
     Res,
     //HttpException,
@@ -40,9 +40,12 @@ import { ConfigService } from '@nestjs/config';
 import { AuthTokenGuard } from '../shared/guards/AuthTokenGuard';
 import { TokenPayloadParam } from '../shared/auth/params/token-payload-params';
 import { TokenPayloadDto } from '../shared/auth/dto/token-payload-dto';
+import { ApiBearerAuth, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
+import { ResponseRecadosDTO } from './dto/response-recados-dto';
 
 @Controller('recados')
 @UsePipes(ParseIntIdPipe)
+@ApiBearerAuth() // Para o swagger interpretar quais rotas necessitam de autenticação.
 @UseGuards(AuthTokenGuard)
 export class RecadosController {
     constructor(
@@ -78,6 +81,8 @@ export class RecadosController {
     }
 
     @Get()
+    @ApiOperation({ summary: 'Busca todos os recados de forma paginada.' })
+    @ApiOkResponse({ type: ResponseRecadosDTO })
     @UseInterceptors(AddHeaderInterceptor, ErrorLogInterceptor)
     findAll(
         @TokenPayloadParam() tokenPayload: TokenPayloadDto,
@@ -88,7 +93,7 @@ export class RecadosController {
     }
 
     // Resposta com status code alterado!
-    @HttpCode(HttpStatus.AMBIGUOUS)
+    /*     @HttpCode(HttpStatus.AMBIGUOUS)
     @Get('todos')
     findAllModificado(@Query() paginatorDto?: PaginatorDto) {
         const { limit = 10, page = 0 } = paginatorDto;
@@ -98,7 +103,7 @@ export class RecadosController {
             limit,
             page,
         };
-    }
+    } */
 
     @Get(':id')
     async findOne(

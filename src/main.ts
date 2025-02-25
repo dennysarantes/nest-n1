@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
 import { ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 //import { SimpleMiddleware } from './app/shared/middlewares/simple.middleware';
 //import { CacheInterceptor } from './app/shared/interceptors/cache.interceptor';
 
@@ -30,6 +31,24 @@ async function bootstrap() {
             origin: 'https://minhaaplicacao.com.br',
         });
     }
+
+    const documentBuilderConfig = new DocumentBuilder()
+        .setTitle('Recados API')
+        .setDescription('API para envio de recados pessoais')
+        .setVersion('1.0')
+        .addBearerAuth()
+        .build();
+
+    const documentSwagger = SwaggerModule.createDocument(
+        app,
+        documentBuilderConfig,
+        {
+            deepScanRoutes: true,
+            autoTagControllers: true,
+        },
+    );
+
+    SwaggerModule.setup('documentacao', app, documentSwagger);
 
     await app.listen(process.env.APP_PORT ?? 3000);
 }

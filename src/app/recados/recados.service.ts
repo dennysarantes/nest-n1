@@ -10,6 +10,7 @@ import { Pessoa } from '../pessoas/entities/pessoa.entity';
 import { UtilShared } from '../shared/util.shared';
 import { EmailService } from 'src/email/email.service';
 import { PessoasService } from '../pessoas/pessoas.service';
+import { ResponseRecadosDTO } from './dto/response-recados-dto';
 
 @Injectable()
 export class RecadosService {
@@ -68,8 +69,7 @@ export class RecadosService {
         return recadoCriado;
     }
 
-    async findAll(paginator?: PaginatorDto) {
-        console.log('service....');
+    async findAll(paginator?: PaginatorDto): Promise<ResponseRecadosDTO> {
         const { limit = 10, page = 0 } = paginator;
         const offset = page * limit;
 
@@ -115,7 +115,7 @@ export class RecadosService {
         }; */
 
         return {
-            data: [...results],
+            data: [...results] as any,
             totalElements: total,
             currentPage: page + 1,
             totalPages: Math.ceil(total / limit),
